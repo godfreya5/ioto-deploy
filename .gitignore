@@ -8,9 +8,7 @@
 # npm
 node_modules
 
-# Don't include the compiled main.js file in the repo.
-# They should be uploaded to GitHub releases instead.
-main.js
+# main.js 随仓库提交（下载即用）；Release 同样携带，二者保持一致
 
 # Exclude sourcemaps
 *.map
@@ -28,6 +26,6 @@ data.json
 .env
 .gitee-token
 
-src/constants.ts
+# src/constants.ts 已不再含任何密钥（开源版），随仓库分发
 
 notes.md

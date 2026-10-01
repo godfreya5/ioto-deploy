@@ -24,12 +24,18 @@ IOTO 框架的部署/更新器——在 Obsidian 内**一键部署 IOTO 框架�
 
     | 平台         | 文件夹      |
     | ------------ | ----------- |
-    | TRAE         | `.trae`     |
+    | Workbuddy    | `.workbuddy` |
+    | Codebuddy    | `.codebuddy` |
+    | DeepSeek Harness | `.dsh`  |
+    | Qoder        | `.qoder`    |
     | Claude Code  | `.claude`   |
-    | OpenCode     | `.opencode` |
     | OpenAI Codex | `.agents`   |
-    | Mimo Code    | `.mimocode` |
+    | Pi           | `.pi`       |
+    | Oh My Pi     | `.omp`      |
+    | OpenCode     | `.opencode` |
+    | TRAE         | `.trae`     |
     | Hermes       | `.hermes`   |
+    | Mimo Code    | `.mimocode` |
 
     技能文件同样随仓库分发（`content/skills/`），离线可用。
 
