@@ -1,4 +1,4 @@
-# IOTO Update
+# IOTO Deploy
 
 IOTO 框架的部署/更新器——在 Obsidian 内**一键部署 IOTO 框架内容、AI Agent 技能与配套插件**。完全开源、完全离线：**无需任何 API Key、账号或配置，下载即用。**
 
@@ -87,6 +87,6 @@ IOTO 框架的部署/更新器——在 Obsidian 内**一键部署 IOTO 框架�
 ## 作者与链接
 
 - **Author:** Johnny
-- **Repository:** https://github.com/shawndotty/ioto-update
+- **Repository:** https://github.com/godfreya5/ioto-deploy
 - **Funding:** https://space.bilibili.com/432408734
 - **教程：** https://www.pursueideal.com/guides/ioto

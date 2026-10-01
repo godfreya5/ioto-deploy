@@ -1,11 +1,11 @@
 {
 	"id": "ioto-update",
-	"name": "IOTO Update",
+	"name": "IOTO Deploy",
 	"version": "2.6.0",
 	"minAppVersion": "0.15.0",
 	"description": "Deploy and update the IOTO Framework from bundled offline content - no API keys, no accounts, works out of the box",
 	"author": "Johnny",
-	"authorUrl": "https://github.com/shawndotty/ioto-update",
+	"authorUrl": "https://github.com/godfreya5/ioto-deploy",
 	"fundingUrl": "https://space.bilibili.com/432408734",
 	"isDesktopOnly": false
 }

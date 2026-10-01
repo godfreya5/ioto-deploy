@@ -79,8 +79,8 @@ export class IOTOUpdateSettingTab extends PluginSettingTab {
 							"github";
 						const repoUrl =
 							source === "github"
-								? "https://github.com/shawndotty/ioto-update"
-								: "https://gitee.com/johnnylearns/ioto-update";
+								? "https://github.com/godfreya5/ioto-deploy"
+								: "https://gitee.com/johnnylearns/ioto-deploy";
 						const latestVersion =
 							source === "github"
 								? await GithubService.getLatestPluginVersion(
