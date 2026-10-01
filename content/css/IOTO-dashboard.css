@@ -1,0 +1,83 @@
+.markdown-source-view.is-live-preview.dashboard .markdown-embed-content h1,
+.markdown-preview-view.dashboard .markdown-embed-content h1 {
+    display: none;
+}
+
+.markdown-source-view.is-live-preview.dashboard .callout,
+.markdown-preview-view.dashboard .callout {
+    background-color: rgba(var(--callout-color), 0.03);
+}
+
+.markdown-source-view.is-live-preview.dashboard .markdown-embed,
+.markdown-preview-view.dashboard .markdown-embed {
+    border-left: none;
+    padding-left: 0;
+}
+
+
+.markdown-source-view.is-live-preview.dashboard .table-view-table > thead > tr > th,
+.markdown-preview-view.dashboard .table-view-table > thead > tr > th {
+    border-bottom: 1px solid var(--text-on-accent);
+}
+
+.markdown-source-view.mod-cm6.dashboard .cm-sizer, .markdown-preview-view.dashboard .markdown-preview-sizer{
+    max-width: 98%;
+}
+
+.markdown-source-view.mod-cm6.dashboard .cm-content{
+    max-width: 100%;
+}
+
+.markdown-source-view.mod-cm6.dashboard .metadata-properties, .markdown-preview-view.dashboard .metadata-properties{
+    display: grid;
+    gap: 1em;
+    grid-template-columns: repeat(6, 1fr);
+}
+
+.markdown-source-view.mod-cm6.dashboard div.dataview-error-box, .markdown-preview-view.dashboard div.dataview-error-box{
+    display: none;
+}
+
+.markdown-source-view.mod-cm6.dashboard .metadata-property, .markdown-preview-view.dashboard .metadata-property{
+    border-bottom: 1px solid;
+    border-radius: 0;
+}
+
+.markdown-source-view.mod-cm6.dashboard.db-2c .metadata-properties, .markdown-preview-view.dashboard.db-2c .metadata-properties{
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.markdown-source-view.mod-cm6.dashboard.db-3c .metadata-properties, .markdown-preview-view.dashboard.db-3c .metadata-properties{
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.markdown-source-view.mod-cm6.dashboard.db-4c .metadata-properties, .markdown-preview-view.dashboard.db-4c .metadata-properties{
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.markdown-source-view.mod-cm6.dashboard.db-5c .metadata-properties, .markdown-preview-view.dashboard.db-5c .metadata-properties{
+    grid-template-columns: repeat(5, 1fr);
+}
+
+
+.markdown-embed-link, .file-embed-link {
+    top: -10px;
+    right: 10px;
+}
+
+.markdown-rendered td, .markdown-rendered th {
+    min-width: auto;
+}
+
+
+/* Dataview List */
+
+.dataview.list-view-ul {
+	list-style: none;
+	padding-left: 0;
+}
+
+ul.dataview.list-view-ul li {
+	padding: 10px 0;
+	border-bottom: 1px solid #666;
+}

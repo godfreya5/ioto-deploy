@@ -1,0 +1,8 @@
+/*
+ ** Script Name: IOTO Ding DB
+ ** Author: Johnny
+ ** Bilibili: https://space.bilibili.com/432408734
+ ** Version: 2.5.0
+ */
+
+var D=Object.defineProperty;var d=(s,r)=>D(s,"name",{value:r,configurable:!0});function I(s){var t;let r=s.user.IOTONoCodeDB(s);return t=class extends r{constructor(e){super(e,{dbName:"Ding",recordIdPropertyName:"dingRecordID",recordIdPropertyNameForDownload:"dingDownloadRecordID",recordIdName:"id",useDate:!1,apiUrlRoot:"https://api.dingtalk.com/v1.0/",recordUrlRoot:"https://alidocs.dingtalk.com/i/nodes/"},{baseIDName:"baseID",defaultBaseIDName:"defaultBaseID",downloadBaseIDName:"downloadBaseID",tableIDName:"sheetID",defaultTableIDName:"defaultSheetID",downloadTableIDName:"downloadSheetID",viewIDName:"viewID",defaultViewIDName:"defaultViewID",downloadViewIDName:"downloadViewID"}),delete this.apiKey,this.appID=e.appID,this.userID=e.userID,this.appSecret=e.appSecret,this.defaultSheetID=e.defaultSheetID||nocoDBBaseSettings.sheetID||"",this.defaultTableID=this.defaultSheetID,this.apiUrlBase=this.apiUrlRoot+`notable/bases/${this.defaultBaseID}/`,this.apiUrl=this.apiUrlBase+`sheets/${this.defaultSheetID}/records`,this.recordUrlBase=`${this.recordUrlRoot}${this.defaultBaseID}?iframeQuery=record%3D`,this.extractKeyPointsAsText=!0,this.extractBlocksAsText=!0,this.extractTagLinesAsText=!0,this.extractSectionsAsText=!0,this.contentMaxLength=9999}makeApiUrl(e,a,o){return`${e}notable/bases/${a}/sheets/${o}/records`}setSyncFolderRecordTableUrlBase(e,a="upload"){const o=this.findSyncFolderNocodDBTableID(e,a),i=this.findSyncFolderNocodDBBaseID(e,a),l=this.findSyncFolderNocodDBViewID(e,a);return this.recordUrlRoot+i+`?iframeQuery=record%3D${o}_${l}_`}},d(t,"MyDingDB"),t}d(I,"IOTODingDB"),module.exports=I;

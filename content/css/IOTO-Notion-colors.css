@@ -1,0 +1,142 @@
+body.theme-light {
+    --ioto-notion-gray: #6B6F76;
+    --ioto-notion-brown: #8B6B5E;
+    --ioto-notion-orange: #D9730D;
+    --ioto-notion-yellow: #C29200;
+    --ioto-notion-green: #2E7D32;
+    --ioto-notion-blue: #0B6E99;
+    --ioto-notion-purple: #6A5ACD;
+    --ioto-notion-pink: #C2185B;
+    --ioto-notion-red: #D32F2F;
+
+    --ioto-notion-gray-bg: rgba(107, 111, 118, 0.18);
+    --ioto-notion-brown-bg: rgba(139, 107, 94, 0.20);
+    --ioto-notion-orange-bg: rgba(217, 115, 13, 0.22);
+    --ioto-notion-yellow-bg: rgba(194, 146, 0, 0.24);
+    --ioto-notion-green-bg: rgba(46, 125, 50, 0.18);
+    --ioto-notion-blue-bg: rgba(11, 110, 153, 0.18);
+    --ioto-notion-purple-bg: rgba(106, 90, 205, 0.18);
+    --ioto-notion-pink-bg: rgba(194, 24, 91, 0.18);
+    --ioto-notion-red-bg: rgba(211, 47, 47, 0.18);
+}
+
+body.theme-dark {
+    --ioto-notion-gray: #9AA0A6;
+    --ioto-notion-brown: #C1A38F;
+    --ioto-notion-orange: #FFB74D;
+    --ioto-notion-yellow: #FFE082;
+    --ioto-notion-green: #81C784;
+    --ioto-notion-blue: #4FC3F7;
+    --ioto-notion-purple: #B39DDB;
+    --ioto-notion-pink: #F48FB1;
+    --ioto-notion-red: #EF9A9A;
+
+    --ioto-notion-gray-bg: rgba(154, 160, 166, 0.20);
+    --ioto-notion-brown-bg: rgba(193, 163, 143, 0.18);
+    --ioto-notion-orange-bg: rgba(255, 183, 77, 0.18);
+    --ioto-notion-yellow-bg: rgba(255, 224, 130, 0.18);
+    --ioto-notion-green-bg: rgba(129, 199, 132, 0.16);
+    --ioto-notion-blue-bg: rgba(79, 195, 247, 0.16);
+    --ioto-notion-purple-bg: rgba(179, 157, 219, 0.16);
+    --ioto-notion-pink-bg: rgba(244, 143, 177, 0.16);
+    --ioto-notion-red-bg: rgba(239, 154, 154, 0.16);
+}
+
+.markdown-rendered span[data-ioto-color="gray"],
+.cm-content span[data-ioto-color="gray"] {
+    color: var(--ioto-notion-gray);
+}
+
+.markdown-rendered span[data-ioto-color="brown"],
+.cm-content span[data-ioto-color="brown"] {
+    color: var(--ioto-notion-brown);
+}
+
+.markdown-rendered span[data-ioto-color="orange"],
+.cm-content span[data-ioto-color="orange"] {
+    color: var(--ioto-notion-orange);
+}
+
+.markdown-rendered span[data-ioto-color="yellow"],
+.cm-content span[data-ioto-color="yellow"] {
+    color: var(--ioto-notion-yellow);
+}
+
+.markdown-rendered span[data-ioto-color="green"],
+.cm-content span[data-ioto-color="green"] {
+    color: var(--ioto-notion-green);
+}
+
+.markdown-rendered span[data-ioto-color="blue"],
+.cm-content span[data-ioto-color="blue"] {
+    color: var(--ioto-notion-blue);
+}
+
+.markdown-rendered span[data-ioto-color="purple"],
+.cm-content span[data-ioto-color="purple"] {
+    color: var(--ioto-notion-purple);
+}
+
+.markdown-rendered span[data-ioto-color="pink"],
+.cm-content span[data-ioto-color="pink"] {
+    color: var(--ioto-notion-pink);
+}
+
+.markdown-rendered span[data-ioto-color="red"],
+.cm-content span[data-ioto-color="red"] {
+    color: var(--ioto-notion-red);
+}
+
+.markdown-rendered mark[data-ioto-color$="_background"],
+.cm-content mark[data-ioto-color$="_background"] {
+    box-decoration-break: clone;
+    padding: 0 0.12em;
+    border-radius: 0.22em;
+    background: transparent;
+    color: inherit;
+}
+
+.markdown-rendered mark[data-ioto-color="gray_background"],
+.cm-content mark[data-ioto-color="gray_background"] {
+    background-color: var(--ioto-notion-gray-bg);
+}
+
+.markdown-rendered mark[data-ioto-color="brown_background"],
+.cm-content mark[data-ioto-color="brown_background"] {
+    background-color: var(--ioto-notion-brown-bg);
+}
+
+.markdown-rendered mark[data-ioto-color="orange_background"],
+.cm-content mark[data-ioto-color="orange_background"] {
+    background-color: var(--ioto-notion-orange-bg);
+}
+
+.markdown-rendered mark[data-ioto-color="yellow_background"],
+.cm-content mark[data-ioto-color="yellow_background"] {
+    background-color: var(--ioto-notion-yellow-bg);
+}
+
+.markdown-rendered mark[data-ioto-color="green_background"],
+.cm-content mark[data-ioto-color="green_background"] {
+    background-color: var(--ioto-notion-green-bg);
+}
+
+.markdown-rendered mark[data-ioto-color="blue_background"],
+.cm-content mark[data-ioto-color="blue_background"] {
+    background-color: var(--ioto-notion-blue-bg);
+}
+
+.markdown-rendered mark[data-ioto-color="purple_background"],
+.cm-content mark[data-ioto-color="purple_background"] {
+    background-color: var(--ioto-notion-purple-bg);
+}
+
+.markdown-rendered mark[data-ioto-color="pink_background"],
+.cm-content mark[data-ioto-color="pink_background"] {
+    background-color: var(--ioto-notion-pink-bg);
+}
+
+.markdown-rendered mark[data-ioto-color="red_background"],
+.cm-content mark[data-ioto-color="red_background"] {
+    background-color: var(--ioto-notion-red-bg);
+}

@@ -1,0 +1,197 @@
+/* ============================================================
+   IOTO · 任务笔记卡片化
+   ------------------------------------------------------------
+   用途：把任务笔记里的「每条任务」（勾选行）渲染成一张卡片；
+        # 目标 / # 复盘 下的普通列表不受影响。
+   启用：① 设置 → 外观 → CSS 片段 → 打开 ioto-task-cards
+        ② 在目标笔记的 frontmatter 写：cssclasses: ioto-task-cards
+        ③ ⌘R 重载界面（改片段不会热更新，必须重载或重新开关）
+   方案：[[Plan-20260928-205401]] §四 方案 B（cssclasses 精确开关）
+   样本：[[IOTO设置插件开发-计划-V252]]、[[IOTO设置插件开发-计划-V251]]
+
+   生效范围：只作用于带 cssclasses: ioto-task-cards 的笔记。
+   想改成全库生效（方案 A），把所有选择器里的 .ioto-task-cards 删掉即可。
+
+   规则依据（Obsidian 1.13.7 app.css 实测）
+   · 实时预览：一个逻辑行 = 一个 .cm-line；长句折行仍属同一元素，
+     所以给行加边框能完整包住折行内容。
+   · 未完成 = data-task=" "（一个空格）；已完成 = x / X。
+   · 实时预览的列表缩进是行内字符（.cm-indent），不是 DOM 嵌套，
+     因此子任务的卡片要自己右移（见 §1.5），否则与父卡片左边缘齐平。
+   · 阅读模式是真 DOM 嵌套：父 li 的卡片会包住子 li 的卡片，
+     子任务靠原生 ul 缩进自动成阶梯，无需额外位移。
+   · 完成态只做「降透明 + 去掉强调线」，不写 text-decoration ——
+     IOTO-checklist.css 已把已完成任务的删除线关掉，这里沿用该取向。
+   · 已知边界：任务里硬换行（Shift+Enter）产生的续行没有 HyperMD-task-line
+     类，会显示成两张卡之间的无边框行；v1 先接受，不处理。
+
+   两个刻意的实现选择
+   · 实时预览的卡片视觉画在 ::before 上，行本身只留内边距：原生有一条
+     `.markdown-source-view.mod-cm6 .cm-content > * { margin: 0 !important }`，
+     凡是在 .cm-line 上写的 margin 都会被它整条吃掉（实测），所以卡片的
+     间距、以及子任务的右移，都只能用 padding / 定位来做。
+   · 折行对齐：阅读模式靠复选框的负外边距、LP 靠 !important 覆盖 Obsidian 注入的
+     text-indent/padding-inline-start；两者都让「卡片左留白 = pad-x + 勾选框 + 间距」。
+   ============================================================ */
+
+/* ---------- 0. 想调参只改这一段 ---------- */
+.ioto-task-cards {
+  --ioto-tc-bg: var(--background-secondary);            /* 卡片底色 */
+  --ioto-tc-bg-active: var(--background-modifier-hover);/* 光标所在行底色 */
+  --ioto-tc-bg-done: var(--background-primary);         /* 已完成卡片底色 */
+  --ioto-tc-border: var(--background-modifier-border);  /* 卡片描边 */
+  --ioto-tc-accent: var(--interactive-accent);          /* 左侧强调线（跟随主题强调色） */
+  --ioto-tc-radius: var(--radius-m);                    /* 圆角 */
+  --ioto-tc-pad-y: 6px;                                 /* 卡内上下留白 */
+  --ioto-tc-pad-x: 10px;                                /* 卡内左右留白 */
+  --ioto-tc-gap: 6px;                                   /* 卡片之间的间距 */
+  --ioto-tc-accent-w: 3px;                              /* 强调线宽度 */
+  --ioto-tc-indent: var(--list-indent);                 /* 子任务每深一级右移的量（= 列表缩进，2.25em） */
+  --ioto-tc-done-opacity: .75;                          /* 已完成任务的弱化程度（1 = 不弱化） */
+  --ioto-tc-box-gap: calc(var(--checkbox-size) * 0.4);  /* 勾选框与其后正文之间的间距 */
+  --ioto-tc-hang-lp: calc(var(--checkbox-size) + var(--ioto-tc-box-gap)); /* LP：勾选框从行首起占用的宽度 */
+}
+
+/* ---------- 1. 实时预览（Live Preview） ---------- */
+
+/* 1.1 一条任务 = 一行；行本身只负责占位：上下各留 gap/2 的空白，
+       相邻卡片合起来就是 gap 宽度（见文件头的实现说明） */
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line {
+  --ioto-tc-lv: 0px;                                      /* 本行的层级位移：顶层 0，子任务见 §1.5 */
+  position: relative;                                     /* 原生已有，写出来便于阅读 */
+  z-index: 0;                                             /* 建层叠上下文，让 ::before 的 z-index:-1 只退到本行底层 */
+  background-color: transparent;                          /* 挡住主题可能给任务行加的底色 */
+  padding-block: calc(var(--ioto-tc-gap) / 2 + var(--ioto-tc-pad-y));
+  padding-inline: calc(var(--ioto-tc-pad-x) + var(--ioto-tc-lv)) var(--ioto-tc-pad-x);
+}
+
+/* 1.1b 折行对齐（LP）：Obsidian 给列表/任务行注入行内样式
+       text-indent:-dpx; padding-inline-start:dpx（d = "- [ ] " 前缀的字符宽度，见 Plan §3.4），
+       让「首行」回到行盒左缘、折行从 d 处起排 —— 源码模式下两者对得上。
+       但 LP 里前缀被隐藏（宽度≈0），首行正文于是比折行靠左 ≈ d-(勾选框+间距)。
+       行内样式 > 类选择器，必须 !important 才能接管；接管后改成以 hang 为准的悬挂缩进。 */
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line {
+  padding-inline-start: calc(var(--ioto-tc-pad-x) + var(--ioto-tc-lv) + var(--ioto-tc-hang-lp)) !important;
+  text-indent: calc(-1 * (var(--ioto-tc-lv) + var(--ioto-tc-hang-lp))) !important;
+}
+/* 勾选框的内外边距原生是 0.85em / 0.25em（相对 input 自身字号解析，值不可预知）→ 换成 px 可算量 */
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line .task-list-label {
+  margin-inline-start: 0;
+}
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line .task-list-label .task-list-item-checkbox {
+  margin-inline-start: 0;
+  margin-inline-end: 0.2em;
+}
+/* 防御：被隐藏的「- 」前缀 span 自带 0.75em 左内边距时会把首行推右（本机实测宽度≈0，留着防版本差异） */
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line > .cm-formatting-list {
+  padding-inline-start: 0;
+}
+
+/* 1.2 卡片本体（轻量描边 + 左侧强调线） */
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line::before {
+  content: "";
+  position: absolute;
+  inset-block: calc(var(--ioto-tc-gap) / 2);               /* 上下内缩半个 gap，形成卡间距 */
+  inset-inline: var(--ioto-tc-lv) 0;                       /* 子任务的卡片跟着右移，与行的内边距同步 */
+  z-index: -1;                                            /* 退到本行底层：文字在上面，卡片不会被盖住 */
+  background-color: var(--ioto-tc-bg);
+  border: 1px solid var(--ioto-tc-border);
+  border-inline-start: var(--ioto-tc-accent-w) solid var(--ioto-tc-border);
+  border-radius: var(--ioto-tc-radius);
+  pointer-events: none;
+}
+
+/* 1.3 光标所在行：保留卡片形态，只换成「激活」配色 */
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line.cm-active::before {
+  background-color: var(--ioto-tc-bg-active);
+  border-color: var(--ioto-tc-accent);
+}
+
+/* 1.4 已完成：降透明 + 去掉强调线（不划删除线） */
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line[data-task="x"],
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line[data-task="X"] {
+  opacity: var(--ioto-tc-done-opacity);
+}
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line[data-task="x"]::before,
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line[data-task="X"]::before {
+  background-color: var(--ioto-tc-bg-done);
+  border-inline-start-color: var(--ioto-tc-border);
+}
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.cm-active.HyperMD-task-line[data-task="x"]::before,
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.cm-active.HyperMD-task-line[data-task="X"]::before {
+  border-inline-start-color: var(--ioto-tc-accent);
+}
+
+/* 1.5 子任务：同样成卡，但整体右移一级、强调线收细、圆角收小，保留层级差
+       （注意：只覆盖到第 5 层；更深的任务仍是卡片，只是不再继续右移） */
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line:not(.HyperMD-list-line-1)::before {
+  border-inline-start-width: calc(var(--ioto-tc-accent-w) - 1px);
+  border-radius: calc(var(--ioto-tc-radius) - 2px);
+}
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line.HyperMD-list-line-2 {
+  --ioto-tc-lv: var(--ioto-tc-indent);
+}
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line.HyperMD-list-line-3 {
+  --ioto-tc-lv: calc(var(--ioto-tc-indent) * 2);
+}
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line.HyperMD-list-line-4 {
+  --ioto-tc-lv: calc(var(--ioto-tc-indent) * 3);
+}
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-task-line.HyperMD-list-line-5 {
+  --ioto-tc-lv: calc(var(--ioto-tc-indent) * 4);
+}
+
+/* ---------- 2. 阅读模式（Reading view） ---------- */
+
+/* 2.1 一条任务 = 一张卡（阅读模式是普通 DOM 流，可以放心用 margin 做卡间距） */
+.markdown-preview-view.ioto-task-cards li.task-list-item {
+  background-color: var(--ioto-tc-bg);
+  border: 1px solid var(--ioto-tc-border);
+  border-inline-start: var(--ioto-tc-accent-w) solid var(--ioto-tc-accent);
+  border-radius: var(--ioto-tc-radius);
+  padding: var(--ioto-tc-pad-y) var(--ioto-tc-pad-x);
+  /* 左留白让出「勾选框 + 间距」：折行（= 内容盒左缘）因此落在正文列上；
+     勾选框靠原生负外边距（§2.2）落回 pad-x 处。 */
+  padding-inline-start: calc(var(--ioto-tc-pad-x) + var(--checkbox-size) + var(--ioto-tc-box-gap));
+  margin-block: var(--ioto-tc-gap);
+}
+
+/* 2.2 复选框：负外边距正是「折行与首行正文对齐」的依据，不能归零（<-- 上一版的错误就在这）。
+       这里把让出的宽度精确取成 --checkbox-size + --ioto-tc-box-gap（与 §2.1 的左留白严丝合缝），
+       于是：折行 = 正文列，勾选框 = 卡片 pad-x 处。间距同时换成 px（理由见 Plan §4.1）。 */
+.markdown-preview-view.ioto-task-cards ul > li.task-list-item > .task-list-item-checkbox,
+.markdown-preview-view.ioto-task-cards ul > li.task-list-item > p > .task-list-item-checkbox {
+  margin-inline-start: calc(-1 * (var(--checkbox-size) + var(--ioto-tc-box-gap)));
+  margin-inline-end: var(--ioto-tc-box-gap);
+}
+
+/* 2.3 已完成：降透明 + 去掉强调线
+       （阅读模式的 li 是真实嵌套，父任务已完成时子卡片会一起变淡 —— 预期行为） */
+.markdown-preview-view.ioto-task-cards li.task-list-item[data-task="x"],
+.markdown-preview-view.ioto-task-cards li.task-list-item[data-task="X"] {
+  background-color: var(--ioto-tc-bg-done);
+  border-inline-start-color: var(--ioto-tc-border);
+  opacity: var(--ioto-tc-done-opacity);
+}
+
+/* 2.4 子任务：卡片套在父卡片里面，靠收细强调线 + 收小圆角区分
+       （左右位移由原生 ul 缩进提供，不用额外写） */
+.markdown-preview-view.ioto-task-cards li.task-list-item li.task-list-item {
+  border-inline-start-width: calc(var(--ioto-tc-accent-w) - 1px);
+  border-radius: calc(var(--ioto-tc-radius) - 2px);
+}
+
+/* Remove Rreading view margin-inline-start for task list */
+
+.markdown-reading-view .markdown-preview-view.ioto-task-cards .task-list-item {
+  margin-inline-start: 0;
+}	
+
+/* collapse indicator */
+.markdown-source-view.mod-cm6.is-live-preview.ioto-task-cards .cm-line.HyperMD-list-line .cm-fold-indicator .collapse-indicator {
+  padding-inline-end: 1em;
+}
+
+.markdown-rendered.ioto-task-cards .list-collapse-indicator {
+  margin-inline-start: -3.25em;
+}

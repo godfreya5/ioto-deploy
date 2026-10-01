@@ -1,0 +1,139 @@
+/* ============================================================
+   IOTO · Mermaid 深色主题配色
+   配色取自参考图（Mermaid 官方 mindmap 示例的暗色版）
+   只在 Obsidian 深色模式下生效，浅色模式不动
+   ============================================================ */
+
+/* ---------- 调色板：换配色只改这一段 ---------- */
+:root {
+  --mm-node:       #501135;  /* 节点底色（酒红） */
+  --mm-node-alt:   #3f5258;  /* 第二色（青灰） */
+  --mm-node-deep:  #0b0000;  /* 第三色（近黑） */
+  --mm-accent:     #8c3f68;  /* 描边 + 连线 */
+  --mm-text:       #d3d3d3;  /* 节点文字 */
+  --mm-root:       #797d7d;  /* mindmap 中心节点 */
+  --mm-root-text:  #2c2c2c;  /* mindmap 中心节点文字 */
+  --mm-cluster:    #0b0000;  /* 子图底色 */
+  --mm-cluster-bd: #3f5258;  /* 子图边框 */
+  --mm-label-bg:   #1b1b1f;  /* 连线标签底色 */
+}
+
+/* ---------- 1. 关掉 Obsidian 的暗色反色滤镜 ---------- */
+/* 不关掉的话，下面所有颜色都会被 invert 滤镜反过去 */
+.theme-dark .mermaid > svg {
+  filter: none !important;
+}
+
+/* ---------- 2. 节点（flowchart / state 等） ---------- */
+.theme-dark .mermaid .node rect,
+.theme-dark .mermaid .node circle,
+.theme-dark .mermaid .node ellipse,
+.theme-dark .mermaid .node polygon,
+.theme-dark .mermaid .node path {
+  fill: var(--mm-node) !important;
+  stroke: var(--mm-accent) !important;
+}
+
+/* ---------- 3. 节点文字 ---------- */
+.theme-dark .mermaid .label text,
+.theme-dark .mermaid .label span,
+.theme-dark .mermaid .nodeLabel,
+.theme-dark .mermaid .nodeLabel p {
+  fill: var(--mm-text) !important;
+  color: var(--mm-text) !important;
+}
+
+/* ---------- 4. 连线 ---------- */
+.theme-dark .mermaid .edgePath .path,
+.theme-dark .mermaid .flowchart-link {
+  stroke: var(--mm-accent) !important;
+}
+
+/* ---------- 5. 箭头 ---------- */
+.theme-dark .mermaid .arrowheadPath,
+.theme-dark .mermaid .marker,
+.theme-dark .mermaid marker path {
+  fill: var(--mm-accent) !important;
+  stroke: var(--mm-accent) !important;
+}
+
+/* ---------- 6. 连线标签的底色块 ---------- */
+.theme-dark .mermaid .edgeLabel rect,
+.theme-dark .mermaid .labelBkg {
+  fill: var(--mm-label-bg) !important;
+  background-color: var(--mm-label-bg) !important;
+}
+
+/* ---------- 7. 子图 subgraph ---------- */
+.theme-dark .mermaid .cluster rect {
+  fill: var(--mm-cluster) !important;
+  stroke: var(--mm-cluster-bd) !important;
+}
+.theme-dark .mermaid .cluster text,
+.theme-dark .mermaid .cluster span {
+  fill: var(--mm-text) !important;
+  color: var(--mm-text) !important;
+}
+
+/* ============================================================
+   8. mindmap 专属
+   mindmap 的分支颜色不吃 .node，走的是 .section-N
+   所以必须单独覆盖，而且顺序要放在第 2 节之后
+   ============================================================ */
+
+/* 分支 1 → 近黑 */
+.theme-dark .mermaid .section-0 rect,
+.theme-dark .mermaid .section-0 path,
+.theme-dark .mermaid .section-0 circle,
+.theme-dark .mermaid .section-0 polygon,
+.theme-dark .mermaid .section-0 ellipse {
+  fill: var(--mm-node-deep) !important;
+  stroke: none !important;
+}
+.theme-dark .mermaid .section-edge-0 {
+  stroke: var(--mm-node-deep) !important;
+}
+
+/* 分支 2 → 酒红 */
+.theme-dark .mermaid .section-1 rect,
+.theme-dark .mermaid .section-1 path,
+.theme-dark .mermaid .section-1 circle,
+.theme-dark .mermaid .section-1 polygon,
+.theme-dark .mermaid .section-1 ellipse {
+  fill: var(--mm-node) !important;
+  stroke: none !important;
+}
+.theme-dark .mermaid .section-edge-1 {
+  stroke: var(--mm-node) !important;
+}
+
+/* 分支 3 → 青灰 */
+.theme-dark .mermaid .section-2 rect,
+.theme-dark .mermaid .section-2 path,
+.theme-dark .mermaid .section-2 circle,
+.theme-dark .mermaid .section-2 polygon,
+.theme-dark .mermaid .section-2 ellipse {
+  fill: var(--mm-node-alt) !important;
+  stroke: none !important;
+}
+.theme-dark .mermaid .section-edge-2 {
+  stroke: var(--mm-node-alt) !important;
+}
+
+/* 中心节点 */
+.theme-dark .mermaid .section-root rect,
+.theme-dark .mermaid .section-root path,
+.theme-dark .mermaid .section-root circle,
+.theme-dark .mermaid .section-root polygon {
+  fill: var(--mm-root) !important;
+  stroke: none !important;
+}
+.theme-dark .mermaid .section-root text {
+  fill: var(--mm-root-text) !important;
+}
+.theme-dark .mermaid .section-root span {
+  color: var(--mm-root-text) !important;
+}
+
+/* ---------- 可选：让图有自己的深色画布底色 ---------- */
+/* .theme-dark .mermaid { background: #1b1b1f; } */

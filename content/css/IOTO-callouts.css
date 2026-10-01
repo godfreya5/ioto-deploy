@@ -1,0 +1,26 @@
+.callout[data-callout="dashboard"] {
+    --callout-icon: lucide-layout-dashboard;
+}
+
+.callout[data-callout="dashboard"]>.callout-content {
+    display: flex;
+    gap: 2em;
+}
+
+.callout[data-callout="dashboard"] .callout-content>.callout, .callout[data-callout="dashboard"] .callout-content>p {
+    margin-top: 0;
+    flex: 1;
+}
+
+.callout[data-callout="dashboard"] .callout-content .embed-title {
+    color: var(--h2-color);
+    font-size: var(--h2-size);
+}
+
+.callout[data-callout="dashboard"] .callout-content>h3 {
+    width: 100%;
+}
+
+.callout[data-callout="dashboard"] .callout-content>p .embed-title {
+    display: none;
+}

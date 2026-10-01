@@ -1,0 +1,15 @@
+.markdown-source-view.is-live-preview.hideProperties .metadata-container,
+.markdown-preview-view.hideProperties .metadata-container,
+.markdown-source-view.is-live-preview.hideProperties .frontmatter-container,
+.markdown-preview-view.hideProperties .frontmatter-container
+{
+	display: none !important;
+}
+
+.markdown-source-view.is-live-preview.hideProperties,
+.markdown-preview-view.hideProperties,
+.markdown-source-view.is-live-preview.hideProperties,
+.markdown-preview-view.hideProperties
+{
+	padding: 10px;
+}

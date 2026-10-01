@@ -1,0 +1,16 @@
+.tableNote table {
+    width: 100%;
+}
+
+.tableNote table tr td:nth-child(1){
+    width: 15%;
+}
+
+.tableNote table:has(tr th strong) tr th {
+    width: 50%;
+    text-align: center;
+}
+
+.tableNote h1, .tableNote h2, .tableNote h3 {
+    text-align: center;
+}

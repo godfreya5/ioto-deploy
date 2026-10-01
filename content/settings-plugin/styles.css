@@ -1,0 +1,1508 @@
+/*
+
+This CSS file will be included with your plugin, and
+available in the app when your plugin is enabled.
+
+If your plugin does not need CSS, delete this file.
+
+*/
+.settings-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--background-modifier-border);
+    margin-bottom: 1em;
+    /* 窄屏横向滚动适配 */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* iOS 惯性滑动 */
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox 隐藏滚动条 */
+}
+.settings-tabs::-webkit-scrollbar {
+    display: none; /* WebKit 隐藏滚动条 */
+}
+.settings-tab {
+    padding: 8px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    /* 窄屏适配：不收缩、不换行 */
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.settings-tab.active {
+    border-bottom-color: var(--interactive-accent);
+    color: var(--interactive-accent);
+}
+
+.settings-tab:hover {
+    color: var(--text-accent);
+}
+
+/* 顶层设置页标签条吸顶：标签条滚到内容区顶部（top = 0）时才吸附，
+   无需滚回顶部即可切换标签页。作用域限定为 .ioto-settings-tab-page 的
+   直接子元素，嵌套标签条不受影响。 */
+.ioto-settings-tab-page > .settings-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 1; /* 低于 --layer-modal(50)：右上角关闭按钮仍在标签条之上，可正常点击 */
+    background-color: inherit; /* 跟随 .vertical-tab-content 的实际背景（桌面/移动端/平板暗色各不相同） */
+}
+
+/* 关键前提：吸附位置 = 滚动容器的 padding-top + top（Chromium 实测）。
+   Obsidian 给滚动容器 .vertical-tab-content 加了 48px 的 padding-top，
+   会把吸附线整体压到 48px 处，标签条便「原地悬浮」、不再随内容滚动。
+   所以把这份顶部留白从容器 padding 挪到首个可见子元素自身的 margin：
+   容器 padding-top 归零后，吸附线才真正落在内容区顶部（top: 0）。 */
+.vertical-tab-content.ioto-settings-tab-page {
+    padding-top: 0;
+}
+.ioto-settings-tab-page > .settings-tabs,
+.ioto-settings-tab-page > .ioto-license-container {
+    margin-top: var(--size-4-12); /* = 原容器 padding-top，保持静止时的视觉不变 */
+}
+
+/* 手机端：settings header 是绝对定位悬浮层（高 = 安全区 + 48px，z-index: 2），
+   吸附线必须下移，否则标签条会被 header 完整盖住；
+   顶部留白同理需改由子元素 margin 提供（原容器 padding-top = header + 16px）。
+   注意：不能写 var(--modal-header-height)，其默认值为 auto，会让 sticky 静默失效。 */
+.is-phone .modal.mod-sidebar-layout .modal-content .vertical-tab-content.ioto-settings-tab-page {
+    padding-top: 0; /* 需比原生移动端规则高一档特异性才能压过 */
+}
+.is-phone .ioto-settings-tab-page > .settings-tabs,
+.is-phone .ioto-settings-tab-page > .ioto-license-container {
+    margin-top: calc(var(--safe-area-inset-top, 0px) + var(--size-4-12) + var(--size-4-4));
+}
+.is-phone .ioto-settings-tab-page > .settings-tabs {
+    top: calc(var(--safe-area-inset-top, 0px) + var(--size-4-12));
+}
+
+/* TextArea 设置项：仅移动端（body.is-mobile）撑满控件列宽度，桌面端保持原宽度 */
+.is-mobile .settings-content textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+/* Input Modal */
+
+.ioto-outgoing-link-suggestion {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.ioto-outgoing-link-index {
+    flex: 0 0 auto;
+    min-width: 1.6em;
+    text-align: right;
+    color: var(--text-faint);
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
+}
+
+.ioto-outgoing-link-label {
+    color: var(--text-normal);
+    white-space: nowrap;
+}
+
+.ioto-outgoing-link-path {
+    color: var(--text-faint);
+    font-size: 0.85em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ioto-outgoing-link-unresolved {
+    color: var(--text-faint);
+    font-size: 0.85em;
+    font-style: italic;
+}
+
+/* 出链弹窗：底部排序按钮栏 */
+.ioto-outgoing-link-sort-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--size-4-2);
+    padding: var(--size-4-2) var(--size-4-3);
+    border-top: 1px solid var(--background-modifier-border);
+    user-select: none;
+}
+
+.ioto-outgoing-link-sort-label {
+    color: var(--text-muted);
+    font-size: var(--font-ui-smaller);
+    margin-inline-end: var(--size-2-2);
+}
+
+.ioto-outgoing-link-sort-btn {
+    font-size: var(--font-ui-smaller);
+    padding: 2px 8px;
+    height: auto;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.ioto-outgoing-link-sort-btn.is-active {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+/* 只作用于本弹窗：保证结果区是唯一可伸缩/可滚动区域，按钮栏不被挤出可视区 */
+.ioto-outgoing-link-modal .prompt-results {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.ioto-input-modal {
+    border-radius: 8px;
+    background: var(--modal-background);
+}
+
+.ioto-input-modal-title {
+    margin: 0 0 20px 0;
+    color: var(--text-normal);
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+/* 标题下方的目标笔记名：小字号、单行省略；只在传了 noteName 的场景渲染 */
+.ioto-input-modal-note {
+    margin: -12px 0 10px 0;   /* 抵消标题的 20px 下边距，让两者贴成一组 */
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ioto-input-container {
+    margin-bottom: 8px;
+}
+
+/* 输入框预留位：放「本次允许改动的范围」等辅助控件 */
+.ioto-input-modal-slot:not(:empty) {
+    margin: 0 0 16px 0;
+}
+
+/* V251 快速命令 chip：点一下把命令插入输入框光标处（不提交） */
+.ioto-quick-command-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    /* 条数多时不折叠，靠换行 + 限高滚动兜底，避免撑高弹窗（移动端尤其重要） */
+    max-height: 96px;
+    overflow-y: auto;
+}
+.ioto-quick-command-chip {
+    cursor: pointer;
+    flex-shrink: 0;
+    max-width: 100%;
+    padding: 2px 10px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 12px;
+    background: var(--background-secondary);
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ioto-quick-command-chip:hover {
+    color: var(--text-normal);
+    background: var(--background-modifier-hover);
+    border-color: var(--interactive-accent);
+}
+
+/* V251「保存为快速命令」二级弹框：label 输入 + 适用通道下拉 同一行 */
+.ioto-quick-command-save-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px 0;
+}
+.ioto-quick-command-save-row .ioto-input {
+    flex: 1;
+}
+.ioto-quick-command-save-used-in {
+    flex-shrink: 0;
+}
+
+.ioto-input-modal-scope {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ioto-input-modal-scope-label {
+    color: var(--text-muted);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.ioto-input-modal-scope-select {
+    flex: 1;
+    padding: 4px 8px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    background: var(--background-primary);
+    color: var(--text-normal);
+    font-size: 13px;
+}
+
+.ioto-input-modal-scope-dir {
+    margin-top: 8px;
+}
+
+.ioto-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    background: var(--background-primary);
+    color: var(--text-normal);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.ioto-input:focus {
+    outline: none;
+    border-color: var(--interactive-accent);
+    box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.2);
+}
+
+.ioto-button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.ioto-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ioto-button-cancel {
+    background: var(--background-modifier-border);
+    color: var(--text-muted);
+}
+
+.ioto-button-cancel:hover {
+    background: var(--background-modifier-border-hover);
+}
+
+.ioto-button-confirm {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.ioto-button-confirm:hover {
+    background: var(--interactive-accent-hover);
+}
+
+/* V251 第二入口：靠左按钮。margin-right:auto 把它推到最左，CANCEL / CONFIRM 位置保持不变 */
+.ioto-quick-command-save-btn {
+    margin-right: auto;
+    /* V251 追加：按钮只剩 plus 图标，收掉文字按钮的横向留白，避免出现一大块空白 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+.ioto-quick-command-save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ioto-license-container {
+    background-color: var(--background-secondary);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* IOTO Quick Panel */
+.ioto-quick-panel {
+    position: absolute;
+    z-index: 5;
+    display: flex;
+    gap: 8px;
+    padding: 6px;
+    background: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    box-shadow: var(--shadow-s);
+    align-items: center;
+}
+.ioto-quick-panel.no-chrome {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+.ioto-quick-panel.pos-bottom {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 20px;
+    flex-direction: row;
+}
+.ioto-quick-panel.pos-left {
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column;
+}
+.ioto-quick-panel.pos-right {
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column;
+}
+.ioto-quick-panel.pos-right.no-chrome {
+    right: 0px;
+    padding: 0;
+}
+.ioto-quick-panel.pos-left.no-chrome {
+    left: 0px;
+    padding: 0;
+}
+.ioto-quick-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+.ioto-quick-btn:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+.ioto-quick-btn-icon {
+    width: 16px;
+    height: 16px;
+}
+.ioto-quick-btn-letter {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 1;
+}
+.ioto-quick-btn-label {
+    font-size: 12px;
+}
+
+/* Quick Panel nav arrows */
+.ioto-quick-nav {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 12px;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+.ioto-quick-nav:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+
+/* Quick Panel color modes */
+.ioto-quick-panel.color-mono .ioto-quick-btn-letter {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+.ioto-quick-panel.color-multi .ioto-quick-btn-letter {
+    color: #fff;
+}
+.ioto-quick-panel.color-multi .ioto-quick-btn-letter[data-kind="A"] {
+    background: #e65202;
+}
+.ioto-quick-panel.color-multi .ioto-quick-btn-letter[data-kind="I"] {
+    background: #008ffd;
+}
+.ioto-quick-panel.color-multi .ioto-quick-btn-letter[data-kind="T"] {
+    background: #02ca1d;
+}
+.ioto-quick-panel.color-multi .ioto-quick-btn-letter[data-action="CreateOutput"] {
+    background: #f3982a;
+}
+.ioto-quick-panel.color-multi .ioto-quick-btn-letter[data-action="CreateOutcome"] {
+    background: #e241f4;
+}
+/* 同步按钮：青色，与已有的橙/蓝/绿/琥珀/品红都不撞色 */
+.ioto-quick-panel.color-multi .ioto-quick-btn-letter[data-kind="S"] {
+    background: #00b8c4;
+}
+
+/* AI status bar agent switcher */
+.ioto-ai-agent-switcher {
+    cursor: pointer;
+    margin-right: 6px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+.ioto-ai-agent-switcher:hover {
+    opacity: 1;
+    background: var(--background-modifier-hover);
+}
+
+/* AI status bar model switcher */
+.ioto-ai-model-switcher {
+    cursor: pointer;
+    margin-right: 6px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+.ioto-ai-model-switcher:hover {
+    opacity: 1;
+    background: var(--background-modifier-hover);
+}
+
+/* AI status bar task-mode switcher */
+.ioto-ai-mode-switcher {
+    cursor: pointer;
+    margin-right: 6px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+.ioto-ai-mode-switcher:hover {
+    opacity: 1;
+    background: var(--background-modifier-hover);
+}
+.ioto-ai-mode-switcher svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* AI model list editor group (settings page) */
+.ioto-ai-model-group {
+    margin: 6px 0;
+    padding: 6px 10px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+}
+.ioto-ai-model-group > summary {
+    cursor: pointer;
+    font-weight: 500;
+    padding: 2px 0;
+}
+
+/* AI 模型列表行：输入框靠左 + 星标紧随 + 删除靠右 */
+.ioto-ai-model-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+}
+.ioto-ai-model-input {
+    flex: 1;
+    min-width: 0;
+}
+.ioto-ai-model-star {
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 36px;
+    opacity: 0.4;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ioto-ai-model-star.is-default {
+    opacity: 1;
+    color: var(--text-accent);
+}
+.ioto-ai-model-del {
+    cursor: pointer;
+    flex-shrink: 0;
+    color: var(--text-error);
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ioto-ai-model-add {
+    margin-top: 6px;
+}
+
+/* V251 快速命令列表编辑器：窄 label + 宽 prompt + 删除靠右 */
+.ioto-ai-quick-command-hint {
+    margin-bottom: 6px;
+}
+.ioto-ai-quick-command-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+}
+.ioto-ai-quick-command-label {
+    flex: 0 0 140px;
+    min-width: 0;
+}
+.ioto-ai-quick-command-prompt {
+    flex: 1;
+    min-width: 0;
+}
+/* V251：适用通道下拉（选区模式 / 非选区模式 / 通用），按内容宽度、不拉伸 */
+.ioto-ai-quick-command-used-in {
+    flex: 0 0 auto;
+    border: var(--input-border-width) solid var(--background-modifier-border);
+    padding: 0 10px;
+    text-align: left;
+}
+/* V253 移动端：快速命令由「一行四项」改为纵向卡片（见 Plan-20261001-111858）
+   ⚠️ 下面「媒体查询段」与「.is-phone 段」是同一套声明，改动时必须同步 */
+@media (pointer: coarse), (max-width: 480px) {
+    .ioto-ai-quick-command-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "label del"
+            "prompt prompt"
+            "usedin usedin";
+        align-items: center;
+        gap: 6px 8px;
+        padding: 8px 0;
+    }
+    .ioto-ai-quick-command-rows
+        .ioto-ai-quick-command-row
+        + .ioto-ai-quick-command-row {
+        border-top: 1px solid var(--background-modifier-border);
+    }
+    .ioto-ai-quick-command-label {
+        grid-area: label;
+        width: 100%;
+        min-width: 0;
+    }
+    .ioto-ai-quick-command-prompt {
+        grid-area: prompt;
+        width: 100%;
+        min-width: 0;
+    }
+    .ioto-ai-quick-command-used-in {
+        grid-area: usedin;
+        width: 100%;
+    }
+    .ioto-ai-quick-command-del {
+        grid-area: del;
+        justify-self: end;
+        padding: 4px 8px;
+    }
+}
+
+/* 桌面 emulateMobile(true) 且窗口未收窄时的兜底（.is-phone 不满足上面两条媒体条件） */
+.is-phone .ioto-ai-quick-command-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "label del"
+        "prompt prompt"
+        "usedin usedin";
+    align-items: center;
+    gap: 6px 8px;
+    padding: 8px 0;
+}
+.is-phone .ioto-ai-quick-command-rows
+    .ioto-ai-quick-command-row
+    + .ioto-ai-quick-command-row {
+    border-top: 1px solid var(--background-modifier-border);
+}
+.is-phone .ioto-ai-quick-command-label {
+    grid-area: label;
+    width: 100%;
+    min-width: 0;
+}
+.is-phone .ioto-ai-quick-command-prompt {
+    grid-area: prompt;
+    width: 100%;
+    min-width: 0;
+}
+.is-phone .ioto-ai-quick-command-used-in {
+    grid-area: usedin;
+    width: 100%;
+}
+.is-phone .ioto-ai-quick-command-del {
+    grid-area: del;
+    justify-self: end;
+    padding: 4px 8px;
+}
+
+/* V253 移动端：API 密钥行控件区——芯片靠左、紧凑按钮靠右（见 Plan-20261001-111858）
+   ⚠️ 原生 `.is-phone .modal .setting-item-control button:not(.clickable-icon)` 特异性为 (0,4,1)，
+   必须用 ≥ 同等特异性 + 作用域类才能覆盖，否则实测不生效 */
+@media (pointer: coarse), (max-width: 480px) {
+    .modal .setting-item.ioto-ai-secret-item .setting-item-control > button:not(.clickable-icon) {
+        width: auto;
+        flex: 0 0 auto;
+        margin-inline-start: auto; /* 把按钮推到最右 */
+    }
+}
+.is-phone .modal .setting-item.ioto-ai-secret-item .setting-item-control > button:not(.clickable-icon) {
+    width: auto;
+    flex: 0 0 auto;
+    margin-inline-start: auto;
+}
+.ioto-ai-quick-command-del {
+    cursor: pointer;
+    flex-shrink: 0;
+    color: var(--text-error);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ioto-ai-quick-command-add {
+    margin-top: 6px;
+}
+
+/* AI status bar stop button */
+.ioto-ai-status-text-clickable {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 1px 4px;
+    transition: color 0.2s, background 0.2s;
+}
+.ioto-ai-status-text-clickable:hover {
+    color: var(--text-accent);
+    background: var(--background-modifier-hover);
+}
+
+.ioto-ai-stop-btn {
+    cursor: pointer;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--text-error, #e6232e);
+    opacity: 0.8;
+    transition: opacity 0.2s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ioto-ai-stop-btn:hover {
+    opacity: 1;
+    background: var(--background-modifier-hover);
+}
+
+/* AI status bar console toggle button */
+.ioto-ai-console-toggle-btn {
+    cursor: pointer;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ioto-ai-console-toggle-btn:hover {
+    opacity: 1;
+    background: var(--background-modifier-hover);
+}
+
+/* AI status bar recent tasks history button */
+.ioto-ai-history-btn {
+    cursor: pointer;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ioto-ai-history-btn:hover {
+    opacity: 1;
+    background: var(--background-modifier-hover);
+}
+
+/* AI status bar silent-failure warning button（仅在有静默失败时由 JS 显示） */
+.ioto-ai-warning-btn {
+    cursor: pointer;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--color-yellow, #e0a800);
+    opacity: 0.8;
+    transition: opacity 0.2s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ioto-ai-warning-btn:hover {
+    opacity: 1;
+    background: var(--background-modifier-hover);
+}
+
+/* Recent tasks menu status dot：
+ * - 优先：JS 注入 <span class="ioto-ai-recent-status-dot">（Windows/Linux 主路径）
+ * - 兜底：::before（macOS 下 Obsidian Menu DOM 就绪更晚，JS 注入常被覆盖）
+ *   一旦 JS 成功注入 span，会给 titleEl 加 "ioto-dot-via-dom"，此时 ::before 规则会被禁用，
+ *   保证 Windows 下不会出现 span + ::before "两个点"。
+ *   ::before 上的关键尺寸/间距都加 !important，避免被 Obsidian 主题或默认样式覆盖导致 macOS 下圆点不显示。 */
+.ioto-ai-recent-status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    border-radius: 50%;
+    vertical-align: middle;
+    flex-shrink: 0;
+    background-color: var(--text-muted);
+}
+.ioto-ai-recent-status-dot[data-state="running"] {
+    background-color: var(--color-yellow);
+    animation: ioto-ai-status-dot-pulse 1.2s ease-in-out infinite;
+}
+.ioto-ai-recent-status-dot[data-state="completed"] {
+    background-color: var(--color-green);
+}
+.ioto-ai-recent-status-dot[data-state="failed"] {
+    background-color: var(--color-red);
+}
+
+/* ::before fallback 规则说明（跨平台修复：macOS 显示 + Windows 不重复）
+ *
+ * - 主路径（:has() 驱动，Obsidian >= 1.3 / Electron >= 22 均原生支持）：
+ *   仅当 titleEl 里**真的不存在** <span class="ioto-ai-recent-status-dot"> 时才显示 ::before。
+ *   这样：
+ *     Windows/Linux → JS 注入 span 成功 → :has() 命中 → ::before 自动隐藏（无双点）
+ *     macOS         → JS 注入 span 被 Obsidian 覆盖 → :has() 不命中 → ::before 自动显示小点
+ *   关键：完全不依赖 JS 手动加/减 "ioto-dot-via-dom" class，避免 macOS 下 class 残留导致 ::before 被永久禁用。
+ *
+ * - 兜底路径（@supports not selector(:has(*))，极罕见旧环境）：
+ *   退化回 v226 的 "ioto-dot-via-dom" class 守卫机制，最大程度兼容。 */
+body .ioto-ai-recent-title,
+body .menu-item-title[data-ioto-state],
+body [data-ioto-state] .menu-item-title,
+.workspace .ioto-ai-recent-title,
+.workspace .menu-item-title[data-ioto-state],
+.workspace [data-ioto-state] .menu-item-title {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* ===== 主路径：:has() 自动处理 ===== */
+body .ioto-ai-recent-title:not(:has(> .ioto-ai-recent-status-dot))::before,
+body .menu-item-title[data-ioto-state]:not(:has(> .ioto-ai-recent-status-dot))::before,
+body [data-ioto-state] .menu-item-title:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace .ioto-ai-recent-title:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace .menu-item-title[data-ioto-state]:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace [data-ioto-state] .menu-item-title:not(:has(> .ioto-ai-recent-status-dot))::before {
+    content: "" !important;
+    display: inline-block !important;
+    width: 8px !important;
+    height: 8px !important;
+    min-width: 8px !important;
+    min-height: 8px !important;
+    margin-right: 8px !important;
+    margin-left: 0 !important;
+    border-radius: 50% !important;
+    vertical-align: middle !important;
+    flex-shrink: 0 !important;
+    align-self: center !important;
+    background-color: var(--text-muted) !important;
+    box-sizing: border-box !important;
+    line-height: 1 !important;
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    float: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    pointer-events: none !important;
+}
+body .ioto-ai-recent-title[data-ioto-state="running"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+body .menu-item-title[data-ioto-state="running"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+body [data-ioto-state="running"] .menu-item-title:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace .ioto-ai-recent-title[data-ioto-state="running"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace .menu-item-title[data-ioto-state="running"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace [data-ioto-state="running"] .menu-item-title:not(:has(> .ioto-ai-recent-status-dot))::before {
+    background-color: var(--color-yellow) !important;
+    animation: ioto-ai-status-dot-pulse 1.2s ease-in-out infinite !important;
+}
+body .ioto-ai-recent-title[data-ioto-state="completed"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+body .menu-item-title[data-ioto-state="completed"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+body [data-ioto-state="completed"] .menu-item-title:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace .ioto-ai-recent-title[data-ioto-state="completed"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace .menu-item-title[data-ioto-state="completed"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace [data-ioto-state="completed"] .menu-item-title:not(:has(> .ioto-ai-recent-status-dot))::before {
+    background-color: var(--color-green) !important;
+}
+body .ioto-ai-recent-title[data-ioto-state="failed"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+body .menu-item-title[data-ioto-state="failed"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+body [data-ioto-state="failed"] .menu-item-title:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace .ioto-ai-recent-title[data-ioto-state="failed"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace .menu-item-title[data-ioto-state="failed"]:not(:has(> .ioto-ai-recent-status-dot))::before,
+.workspace [data-ioto-state="failed"] .menu-item-title:not(:has(> .ioto-ai-recent-status-dot))::before {
+    background-color: var(--color-red) !important;
+}
+
+/* ===== 兜底路径：不支持 :has() 的极罕见旧环境，退化到 class 守卫 ===== */
+@supports not selector(:has(*)) {
+    body .ioto-ai-recent-title:not(.ioto-dot-via-dom)::before,
+    body .menu-item-title[data-ioto-state]:not(.ioto-dot-via-dom)::before,
+    body [data-ioto-state] .menu-item-title:not(.ioto-dot-via-dom)::before,
+    .workspace .ioto-ai-recent-title:not(.ioto-dot-via-dom)::before,
+    .workspace .menu-item-title[data-ioto-state]:not(.ioto-dot-via-dom)::before,
+    .workspace [data-ioto-state] .menu-item-title:not(.ioto-dot-via-dom)::before {
+        content: "" !important;
+        display: inline-block !important;
+        width: 8px !important;
+        height: 8px !important;
+        min-width: 8px !important;
+        min-height: 8px !important;
+        margin-right: 8px !important;
+        margin-left: 0 !important;
+        border-radius: 50% !important;
+        vertical-align: middle !important;
+        flex-shrink: 0 !important;
+        align-self: center !important;
+        background-color: var(--text-muted) !important;
+        box-sizing: border-box !important;
+        line-height: 1 !important;
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        float: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        pointer-events: none !important;
+    }
+    body .ioto-ai-recent-title[data-ioto-state="running"]:not(.ioto-dot-via-dom)::before,
+    body .menu-item-title[data-ioto-state="running"]:not(.ioto-dot-via-dom)::before,
+    body [data-ioto-state="running"] .menu-item-title:not(.ioto-dot-via-dom)::before,
+    .workspace .ioto-ai-recent-title[data-ioto-state="running"]:not(.ioto-dot-via-dom)::before,
+    .workspace .menu-item-title[data-ioto-state="running"]:not(.ioto-dot-via-dom)::before,
+    .workspace [data-ioto-state="running"] .menu-item-title:not(.ioto-dot-via-dom)::before {
+        background-color: var(--color-yellow) !important;
+        animation: ioto-ai-status-dot-pulse 1.2s ease-in-out infinite !important;
+    }
+    body .ioto-ai-recent-title[data-ioto-state="completed"]:not(.ioto-dot-via-dom)::before,
+    body .menu-item-title[data-ioto-state="completed"]:not(.ioto-dot-via-dom)::before,
+    body [data-ioto-state="completed"] .menu-item-title:not(.ioto-dot-via-dom)::before,
+    .workspace .ioto-ai-recent-title[data-ioto-state="completed"]:not(.ioto-dot-via-dom)::before,
+    .workspace .menu-item-title[data-ioto-state="completed"]:not(.ioto-dot-via-dom)::before,
+    .workspace [data-ioto-state="completed"] .menu-item-title:not(.ioto-dot-via-dom)::before {
+        background-color: var(--color-green) !important;
+    }
+    body .ioto-ai-recent-title[data-ioto-state="failed"]:not(.ioto-dot-via-dom)::before,
+    body .menu-item-title[data-ioto-state="failed"]:not(.ioto-dot-via-dom)::before,
+    body [data-ioto-state="failed"] .menu-item-title:not(.ioto-dot-via-dom)::before,
+    .workspace .ioto-ai-recent-title[data-ioto-state="failed"]:not(.ioto-dot-via-dom)::before,
+    .workspace .menu-item-title[data-ioto-state="failed"]:not(.ioto-dot-via-dom)::before,
+    .workspace [data-ioto-state="failed"] .menu-item-title:not(.ioto-dot-via-dom)::before {
+        background-color: var(--color-red) !important;
+    }
+}
+
+@keyframes ioto-ai-status-dot-pulse {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.18); }
+}
+
+/* Jump-to-line temporary highlight (2s pulse + fade) */
+.ioto-executed-target {
+    background-color: var(--text-highlight-bg, rgba(255, 204, 0, 0.25));
+    box-shadow: 0 0 0 1px rgba(255, 193, 7, 0.35) inset;
+}
+.ioto-executed-target-dummy {
+    z-index: 1;
+}
+.ioto-executed-target-highlight {
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    background-color: color-mix(in srgb, var(--color-yellow, #f1c40f) 28%, transparent);
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--color-yellow, #f1c40f) 55%, transparent) inset,
+        0 2px 10px color-mix(in srgb, var(--color-yellow, #f1c40f) 15%, transparent);
+    opacity: 0;
+    transform-origin: left center;
+    transition:
+        opacity 240ms ease-out,
+        background-color 240ms ease-out,
+        box-shadow 240ms ease-out;
+}
+.ioto-executed-target-highlight--on {
+    animation: ioto-executed-target-blink 2s ease-out forwards;
+}
+@keyframes ioto-executed-target-blink {
+    0% {
+        opacity: 0;
+        filter: brightness(1.3);
+    }
+    12% {
+        opacity: 1;
+        filter: brightness(1.5);
+    }
+    32% {
+        opacity: 0.55;
+        filter: brightness(1.1);
+    }
+    52% {
+        opacity: 1;
+        filter: brightness(1.3);
+    }
+    72% {
+        opacity: 0.7;
+        filter: brightness(1.05);
+    }
+    100% {
+        opacity: 0;
+        filter: brightness(1);
+    }
+}
+.ioto-ai-console-toggle-active {
+    opacity: 1;
+    color: var(--text-accent);
+    animation: ioto-console-pulse 1.5s ease-in-out infinite;
+}
+@keyframes ioto-console-pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Console View */
+.ioto-console-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    font-family: var(--font-monospace);
+    font-size: 13px;
+}
+.ioto-console-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    background: var(--background-secondary);
+    flex-shrink: 0;
+}
+.ioto-console-btn {
+    padding: 2px 10px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    background: var(--background-primary);
+    color: var(--text-normal);
+    cursor: pointer;
+    font-size: 12px;
+}
+.ioto-console-btn:hover {
+    background: var(--background-modifier-hover);
+}
+.ioto-console-output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 10px;
+    background: var(--background-primary);
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.5;
+}
+.ioto-console-spacer {
+    margin: 0;
+    padding: 0;
+}
+.ioto-console-measure {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    visibility: hidden;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.5;
+    pointer-events: none;
+}
+.ioto-console-line.stderr {
+    color: var(--text-error);
+}
+.ioto-console-line.thinking {
+    color: var(--text-muted);
+    font-style: italic;
+}
+.ioto-console-line.tool {
+    color: #4a9eff;
+}
+.ioto-console-line.result {
+    color: #4caf50;
+}
+.ioto-console-line.system {
+    color: var(--text-muted);
+}
+.ioto-console-line.reply {
+    color: var(--text-normal);
+}
+
+/* ── 条目控制录入面板（ItemControlPanel）── */
+
+/* 方案 A：Modal 子类贴行悬浮；遮罩透明、面板固定定位（具体 left/top 由 JS 写入） */
+body .ioto-item-control-modal .modal-bg,
+.workspace .ioto-item-control-modal .modal-bg {
+    background: transparent;
+}
+body .ioto-item-control-modal .modal,
+.workspace .ioto-item-control-modal .modal {
+    position: fixed;
+    margin: 0;
+    max-width: none;
+    width: var(--ioto-icp-width, 560px);
+    box-shadow: var(--shadow-s);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+.ioto-item-control-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+}
+
+/* 全宽元素：标题 / 分割线 / 预览 / 提示 / 按钮区跨两列 */
+.ioto-icp-title,
+.ioto-icp-section,
+.ioto-icp-preview,
+.ioto-icp-hint,
+.ioto-icp-buttons {
+    grid-column: 1 / -1;
+}
+
+.ioto-icp-title {
+    font-size: var(--font-ui-larger);
+    font-weight: var(--font-bold);
+    color: var(--text-normal);
+}
+
+/* 区块间细分隔线（依赖 / 路由 / 执行） */
+.ioto-icp-section {
+    border-top: 1px solid var(--background-modifier-border);
+    margin: 0 -4px;
+}
+
+/* 设置单元格：label 在上、控件在下，两列网格中左右对齐 */
+.ioto-icp-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+    min-width: 0;
+}
+
+.ioto-icp-label {
+    color: var(--text-muted);
+    font-size: var(--font-ui-smaller);
+    white-space: nowrap;
+}
+
+.ioto-icp-control {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+/* 依赖序号行：chips + 添加按钮 + 浮层的相对定位容器 */
+.ioto-icp-field {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.ioto-icp-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.ioto-icp-chip {
+    display: inline-flex;
+    align-items: center;
+    background: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 999px;
+    padding: 2px 4px 2px 10px;
+    font-size: var(--font-ui-smaller);
+    color: var(--text-normal);
+    line-height: 1.4;
+}
+
+.ioto-icp-chip-x {
+    margin-left: 2px;
+    cursor: pointer;
+    color: var(--text-faint);
+    padding: 0 4px;
+    border-radius: 999px;
+}
+.ioto-icp-chip-x:hover {
+    color: var(--text-error);
+}
+
+.ioto-icp-input,
+.ioto-icp-select,
+.ioto-icp-num {
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 5px;
+    color: var(--text-normal);
+    height: 28px;
+    padding: 0 8px;
+    font-size: var(--font-ui-small);
+}
+/* 文本输入 / 下拉：填满控件列剩余空间，保证各行左缘对齐、宽度一致 */
+.ioto-icp-input,
+.ioto-icp-select {
+    flex: 1 1 140px;
+    min-width: 120px;
+    width: auto;
+}
+.ioto-icp-num {
+    flex: 0 0 84px;
+    width: 84px;
+}
+.ioto-icp-num:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* checkbox 组：勾选框与关联数字框同行对齐，整组可点击 */
+.ioto-icp-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.ioto-icp-check-box,
+.ioto-icp-popover-item input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    padding: 0;
+    accent-color: var(--interactive-accent);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.ioto-icp-add-btn {
+    background: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 5px;
+    color: var(--text-muted);
+    cursor: pointer;
+    height: 24px;
+    width: 26px;
+    padding: 0;
+    font-size: var(--font-ui-small);
+    line-height: 1;
+}
+.ioto-icp-add-btn:hover {
+    color: var(--text-normal);
+    border-color: var(--background-modifier-border-hover);
+}
+
+/* 依赖序号点选浮层：相对 field 容器定位，替代硬编码 margin-top */
+.ioto-icp-popover {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 10;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    box-shadow: var(--shadow-s);
+    padding: 4px;
+    max-height: 200px;
+    overflow: auto;
+    min-width: 220px;
+}
+.ioto-icp-popover-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: var(--font-ui-small);
+}
+.ioto-icp-popover-item:hover {
+    background: var(--background-modifier-hover);
+}
+.ioto-icp-popover-empty {
+    color: var(--text-faint);
+    padding: 3px 8px;
+}
+
+/* 预览：紧凑横条（内嵌小标签 + 等宽文本） */
+.ioto-icp-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--background-secondary);
+    border-radius: 6px;
+    padding: 5px 10px;
+    min-width: 0;
+}
+.ioto-icp-preview-label {
+    color: var(--text-faint);
+    font-size: var(--font-ui-smaller);
+    flex-shrink: 0;
+}
+.ioto-icp-preview-text {
+    font-family: var(--font-monospace);
+    font-size: var(--font-ui-smaller);
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.ioto-icp-hint {
+    font-size: var(--font-ui-smaller);
+    min-height: 1em;
+}
+.ioto-icp-hint.is-error {
+    color: var(--text-error);
+}
+.ioto-icp-hint.is-warn {
+    color: var(--text-warning);
+}
+.ioto-icp-hint.is-info {
+    color: var(--text-accent);
+}
+.ioto-icp-hint-inline {
+    font-size: var(--font-ui-smaller);
+    color: var(--text-faint);
+}
+
+/* 按钮区：清空居左弱化，取消 / 确认居右 */
+.ioto-icp-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+}
+.ioto-icp-buttons-right {
+    display: flex;
+    gap: 8px;
+}
+/* 清空按钮：基础样式复用 ioto-button，仅 hover 变红提示破坏性 */
+.ioto-icp-btn-clear:hover {
+    color: var(--text-error);
+    border-color: var(--text-error);
+}
+.ioto-icp-buttons .ioto-button-confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===== V253 移动端 AI（API 通道）===== */
+
+/* 输入弹窗 header：写入动作分段控件（替换 / 追加，无「只回答」） */
+.ioto-input-modal-write-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.ioto-input-modal-write-action-label {
+    color: var(--text-muted);
+    font-size: 13px;
+    white-space: nowrap;
+}
+/* ① 容器上覆盖 Obsidian 基础 button 变量：height / border-radius 在基础规则里直接读这两个
+      变量，覆盖一次其后代按钮全员生效（桌面 30px → 移动 44px 均拉回 24px）。 */
+.ioto-segmented {
+    display: inline-flex;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    overflow: hidden;
+    /* 手机端 --input-height / --button-radius = 触控尺寸（44px），这里拉回紧凑值 */
+    --input-height: 24px;
+    --button-radius: 6px;
+}
+/* ② 用 .ioto-input-modal 提一级（0-2-0），压住 button:not(.clickable-icon)（0-1-1）的灰底与阴影 */
+.ioto-input-modal .ioto-segmented-item {
+    padding: 0 12px;            /* 垂直留白交给 height，不重复加高 */
+    border: none;
+    background-color: transparent;  /* 关键：压掉 --interactive-normal 的灰底 */
+    box-shadow: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: var(--font-normal);
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.ioto-input-modal .ioto-segmented-item + .ioto-segmented-item {
+    border-left: 1px solid var(--background-modifier-border);
+}
+.ioto-input-modal .ioto-segmented-item.is-active {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+/* ③ 触摸设备（iPhone 等 pointer: coarse）：24px 低于 44pt 建议触控尺寸，抬到 32px 加固触摸目标 */
+@media (pointer: coarse) {
+    .ioto-input-modal .ioto-segmented-item {
+        min-height: 32px;
+    }
+}
+
+/* 运行态模态：转圈 + ⏹。✕ / 点背景只隐藏，不停止 */
+.ioto-running-modal-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px 0;
+}
+.ioto-running-modal-title {
+    font-size: 15px;
+    color: var(--text-normal);
+}
+.ioto-running-modal-subtitle {
+    margin: 0 0 16px 0;
+    font-size: var(--font-ui-smaller);
+    color: var(--text-muted);
+    text-align: center;
+    word-break: break-all;
+}
+.ioto-running-modal-spinner {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    border: 2px solid var(--background-modifier-border);
+    border-top-color: var(--interactive-accent);
+    border-radius: 50%;
+    animation: ioto-running-spin 0.9s linear infinite;
+}
+@keyframes ioto-running-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+.ioto-running-modal-stop {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* 结果态模态：答复显示区的唯一落点 */
+.ioto-result-modal-answer-only {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0 0 4px 0;
+}
+.ioto-result-modal-reason {
+    color: var(--text-error);
+    font-size: 13px;
+    margin: 0 0 12px 0;
+}
+.ioto-result-modal-answer {
+    max-height: 50vh;
+    overflow-y: auto;
+    padding: 8px 12px;
+    margin: 0 0 16px 0;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background: var(--background-secondary);
+}
+/* 结果弹窗有两排按钮：动作排 + 关闭排 */
+.ioto-result-modal .ioto-button-container + .ioto-button-container {
+    margin-top: 8px;
+}
+
+/* 自由「替换」的写前 diff 预览（等宽左右对照，不做行级 diff） */
+.ioto-diff-preview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0 0 16px 0;
+}
+.ioto-diff-preview-label {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin: 0 0 4px 0;
+}
+.ioto-diff-preview-body {
+    max-height: 45vh;
+    overflow: auto;
+    margin: 0;
+    padding: 8px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background: var(--background-secondary);
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* 设置页：密钥名填了但取不到时的引导 */
+.ioto-mobile-ai-key-warning {
+    margin: -8px 0 16px 0;
+    color: var(--text-warning);
+    font-size: 12px;
+}
+
+/* 移动端窄屏：diff 两栏改为上下堆叠，按钮区换行 */
+.is-phone .ioto-diff-preview-grid {
+    grid-template-columns: 1fr;
+}
+.is-phone .ioto-input-modal-write-action {
+    flex-wrap: wrap;
+}
+.is-phone .ioto-button-container {
+    flex-wrap: wrap;
+}

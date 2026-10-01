@@ -163,7 +163,11 @@ async function exportPack(pack) {
 		const dir = rel ? join(targetDir, rel) : targetDir;
 		mkdirSync(dir, { recursive: true });
 
-		const fileBase = sanitize(title.value);
+		let fileBase = sanitize(title.value);
+		// Title 字段可能自带扩展名（如 "xxx.md"），避免拼出 ".md.md" 双后缀
+		if (new RegExp(`\\.${ext}$`, "i").test(fileBase)) {
+			fileBase = fileBase.replace(new RegExp(`\\.${ext}$`, "i"), "");
+		}
 		// 多语言导出策略：zh 用原名，en/tw 加语言后缀，三语共存互不覆盖
 		const suffix = title.lang === "zh" ? "" : `.${title.lang}`;
 		const filePath = join(dir, `${fileBase}${suffix}.${ext}`);

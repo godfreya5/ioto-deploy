@@ -1,0 +1,38 @@
+/* ============================================================
+   IOTO · Canvas 边框 / 连线修复（针对 AnuPpuccin 主题）
+   说明见 [[Coding Plan-20260923-085744]]
+   ------------------------------------------------------------
+   背景：AnuPpuccin 把 --canvas-color 定义成「RGB 三元组」
+        （mocha = 105,109,134 / latte = 156,160,176），因为它自己
+        在两处写作 rgb(var(--canvas-color))；而 Obsidian 1.13 的原生
+        Canvas 规则把 --canvas-color 当「完整颜色」直接用：
+          .canvas-node-container                { border: 1px solid var(--canvas-color) }
+          .canvas-edges path.canvas-display-path { stroke: var(--canvas-color) }
+          .canvas-edges polygon.canvas-path-end  { stroke/fill: var(--canvas-color) }
+        三元组不是合法颜色 → 这些声明在计算期失效被整条丢弃
+        → border-style / stroke 变成 none → 边框与连线完全不渲染。
+   改法：把 --canvas-color 恢复为合法颜色。
+   ============================================================ */
+
+/* ---------- 想调整颜色只改这一行 ---------- */
+body {
+  /* 语义色，自动适配亮/暗与其它主题；也可直接写十六进制，如 #8e95b3 */
+  --ioto-canvas-line: var(--text-muted);
+}
+/* ----------------------------------------- */
+
+/* 覆盖主题里的 --canvas-color
+   （与主题同权重，片段在主题之后加载故生效；
+    彩色节点 .mod-canvas-color-1..6 的值设在节点自身，不受影响） */
+.theme-dark.theme-dark,
+.theme-light.theme-light,
+body {
+  --canvas-color: var(--ioto-canvas-line);
+}
+
+/* AnuPpuccin 里仅有的两处「假定 --canvas-color 是三元组」的规则，
+   跟随上面的合法颜色，保持观感一致 */
+.canvas-node-placeholder,
+.canvas-node.is-themed .canvas-node-label {
+  color: var(--canvas-color);
+}

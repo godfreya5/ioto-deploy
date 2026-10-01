@@ -1,0 +1,9 @@
+.iotoTDL .markdown-embed, .iotoTDL .file-embed {
+    border: none;
+    padding-left: 0;
+}
+
+.iotoTDL .markdown-embed-link, .iotoTDL .file-embed-link {
+    top: 18px;
+    right: 0;
+}
