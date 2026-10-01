@@ -1,0 +1,114 @@
+/*
+
+This CSS file will be included with your plugin, and
+available in the app when your plugin is enabled.
+
+If your plugin does not need CSS, delete this file.
+
+*/
+.settings-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--background-modifier-border);
+    margin-bottom: 1em;
+}
+
+.settings-tab {
+    padding: 8px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.settings-tab.active {
+    border-bottom-color: var(--interactive-accent);
+    color: var(--interactive-accent);
+}
+
+.settings-tab:hover {
+    color: var(--text-accent);
+}
+
+/* Validation Input Styles */
+input.valid-input {
+	border-color: #4caf50; /* Green */
+	color: #4caf50;
+}
+
+input.invalid-input {
+	border-color: #ff5252; /* Red */
+	color: #ff5252;
+}
+
+.valid-text {
+	color: #4caf50; /* Green */
+	margin-left: 10px;
+	font-weight: bold;
+}
+
+.loading-text {
+	margin-left: 10px;
+}
+
+.ioto-license-container {
+    background-color: var(--background-secondary);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* Plugins Center */
+.ioto-plugins-list {
+    margin-top: 12px;
+}
+
+.ioto-plugins-list .setting-item {
+    border-top: 1px solid var(--background-modifier-border);
+    padding-top: 12px;
+    padding-bottom: 12px;
+    align-items: center;
+}
+
+.ioto-plugins-list .setting-item:first-child {
+    border-top: none;
+}
+
+/* Plugins Center — repo link icons */
+.ioto-repo-icons {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.ioto-repo-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    line-height: 0;
+    text-decoration: none;
+    border: 1px solid var(--background-modifier-border);
+    color: var(--text-muted);
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.ioto-repo-link:hover {
+    color: var(--text-normal);
+    border-color: var(--interactive-accent);
+    background-color: var(--background-modifier-hover);
+}
+
+.ioto-repo-link svg {
+    flex-shrink: 0;
+    display: block;
+}
+
+.ioto-repo-link--github,
+.ioto-repo-link--gitee {
+    color: var(--text-muted);
+}
+
+.ioto-repo-link--github:hover,
+.ioto-repo-link--gitee:hover {
+    color: var(--text-normal);
+}
